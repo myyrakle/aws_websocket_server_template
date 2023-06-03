@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - VERSION=$CODEBUILD_BUILD_NUMBER
+  build:
+    commands:
+      - echo "build connect lambda"
+      - cd ./connect
+      - zip -r ./deploy.zip .
+      - aws lambda update-function-code --function-name $CONNECT_LAMBDA --zip-file fileb://deploy.zip
+      - cd ..
+      - echo "build disconnect lambda"
+      - cd ./disconnect
+      - zip -r ./deploy.zip .
+      - aws lambda update-function-code --function-name $DISCONNECT_LAMBDA --zip-file fileb://deploy.zip
+      - cd ..
+      - echo "build default lambda"
+      - cd ./default
+      - zip -r ./deploy.zip .
+      - aws lambda update-function-code --function-name $DEFAULT_LAMBDA --zip-file fileb://deploy.zip
+      - cd ..
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo success
